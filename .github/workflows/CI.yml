@@ -12,7 +12,7 @@ env:
 
 jobs:
   # ─────────────────────────────────────────────
-  # Detect which services actually changed
+  # Detect which services actually change
   # ─────────────────────────────────────────────
   detect-changes:
     name: Detect changed services
