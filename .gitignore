@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Test coverage
+coverage/
+**/coverage/
+
+# Environment files
+.env
+**/.env
+
+# Logs
+*.log
+**/logs/
+
+# Docker
+.dockerignore
+
+# OS files
+.DS_Store
+Thumbs.db
