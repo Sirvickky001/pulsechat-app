@@ -1,0 +1,55 @@
+name: Update config repo
+description: Clones pulsechat-config, updates the image tag for one service, commits and pushes
+
+inputs:
+  service:
+    description: Service name (api, ws-gateway, presence)
+    required: true
+  short-sha:
+    description: Short git SHA to tag the image with
+    required: true
+  config-repo-pat:
+    description: PAT with write access to pulsechat-config
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout config repo
+      uses: actions/checkout@v4
+      with:
+        repository: Sirvickky001/pulsechat-config
+        token: ${{ inputs.config-repo-pat }}
+        path: config-repo
+
+    - name: Determine environment from branch
+      id: env
+      shell: bash
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          echo "ENV=production" >> $GITHUB_OUTPUT
+        else
+          echo "ENV=dev" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update image tag
+      shell: bash
+      run: |
+        ENV=${{ steps.env.outputs.ENV }}
+        SERVICE=${{ inputs.service }}
+        FILE="config-repo/${SERVICE}/${ENV}/values.yaml"
+        sed -i "s/tag: .*/tag: sha-${{ inputs.short-sha }}/" "${FILE}"
+        echo "Updated ${FILE}:"
+        cat "${FILE}"
+
+    - name: Commit and push
+      shell: bash
+      run: |
+        ENV=${{ steps.env.outputs.ENV }}
+        SERVICE=${{ inputs.service }}
+        cd config-repo
+        git config user.email "ci-bot@github.com"
+        git config user.name "PulseChat CI"
+        git add ${SERVICE}/${ENV}/values.yaml
+        git commit -m "chore(${SERVICE}): update ${ENV} image to sha-${{ inputs.short-sha }} [skip ci]"
+        git push
