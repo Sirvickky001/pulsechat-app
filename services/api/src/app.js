@@ -10,7 +10,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-in-production';
 function createApp(pool) {
   const app = express();
   app.use(express.json());
-  app.use(express.static(path.join(__dirname, '..', '..', '..', 'public')));
+  app.use(express.static(path.join(__dirname, '..', 'public')));
+
 
   app.get('/health', (req, res) => {
     res.json({ status: 'ok', uptime: process.uptime() });
