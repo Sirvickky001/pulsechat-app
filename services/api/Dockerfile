@@ -1,4 +1,3 @@
-#Docker
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
@@ -9,6 +8,7 @@ WORKDIR /app
 RUN addgroup -S pulsechat && adduser -S pulsechat -G pulsechat
 COPY --from=deps /app/node_modules ./node_modules
 COPY src/ ./src/
+COPY public/ ./public/
 COPY package.json ./
 USER pulsechat
 ENV NODE_ENV=production
